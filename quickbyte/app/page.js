@@ -1,7 +1,33 @@
+'use client';
+
 import Image from "next/image";
 import styles from "./page.module.css";
+import { use, useEffect, useState } from "react";
+import supabase from '../lib/supabaseClient';
 
 export default function Home() {
+
+  const [testData, setTestData] = useState([]);
+
+  useEffect(() => {
+    const fetchTestData = async () => {
+      const { data, error } = await supabase
+        .from("test_data")
+        .select("*")
+        .limit(1);
+
+      if (error) {
+        console.error("Error fetching test data:", error);
+      } else {
+        setTestData(data);
+      }
+    };
+
+    fetchTestData();
+  }, []);
+  if (testData.length === 0) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -19,6 +45,15 @@ export default function Home() {
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>
+
+        <div>
+          {testData.map((item) => (
+            <div key={item.id}>
+              <h2>id: {item.id}</h2>
+              <p>message: {item.message}</p>
+            </div>
+          ))}
+        </div>
 
         <div className={styles.ctas}>
           <a
