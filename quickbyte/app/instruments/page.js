@@ -5,10 +5,10 @@ export default async function Instruments() {
     const { data: instruments } = await supabase.from("instruments").select();
 
     return (
-        <div>
+        <div className={styles.page}>
             <h1>Instruments</h1>
-            <br></br>
-            <ul>
+
+            <ul className={styles.li}>
                 {instruments.map((instrument) => (
                     <li key={instrument.name}>{instrument.id} {instrument.name}</li>
                 ))}
