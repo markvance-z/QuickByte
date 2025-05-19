@@ -28,14 +28,15 @@ export default function RootLayout({ children }) {
           <header>
             <text className="title">QuickByte</text>
           </header>
-        <div className="flex">
-          <div className="side-bar-left">< SideBarLeft />
-          <div className="main-content">{children}</div>
-          </div>
-        </div>
 
+          <aside> 
+            < SideBarLeft />
+          </aside>
+
+          <main>
+            {children}
+          </main> 
       </body>
-      
     </html>
   );
 }
