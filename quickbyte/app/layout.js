@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable}`}>
           <header>
-            <text className="title">QuickByte</text>
+            < Header />
           </header>
 
           <aside> 

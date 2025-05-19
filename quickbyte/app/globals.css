@@ -29,20 +29,19 @@ body {
   grid-template-rows: 60px 1fr;
   grid-template-columns: 200px 1fr;
   grid-template-areas: 
-    "header header header"
-    "sidebar main main"
-    "sidebar main main";
+    "header header"
+    "sidebar main"
+    "sidebar main";
 }
 
 aside {
   grid-area: sidebar;
   background-color: #e96341;
-  width: 100px;
-  height: 100%;
 }
 
 main {
   grid-area: main;
+  padding-left: 25px;
 }
 
 header {
@@ -50,15 +49,14 @@ header {
   font-family: monospace;
   background-color: #61c4a3;
   color: black;
-}
-
-.flex {
   display: flex;
-
+  align-items: center;
 }
 
 .title {
   font-size: xx-large;
+  margin-left: auto;
+
 }
 
 

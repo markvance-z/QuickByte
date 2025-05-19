@@ -1,11 +1,14 @@
 import React from 'react';
+import Image from "next/image";
 
 export default function Header() {
-    return <div>
-        <text className="title">QuickByte</text>
-        <input className="filter" placeholder="search here"></input>
-        <button className="filter">Filter</button>
-        <button className="cart">🛒 Grocery Cart</button>
-    </div>
+    return <header className="header">
+        <span className="title">QuickByte</span><Image 
+            src="/cat.png"
+            width={40}
+            height={40}
+            alt="cat"
+        />
+    </header>
 
 }
