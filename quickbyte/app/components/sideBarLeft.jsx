@@ -2,7 +2,6 @@
 
 import React, {useState, useEffect} from 'react';
 import supabase from '../../lib/supabaseClient';
- 
 
 export default function SideBarLeft() {
     const [open, setOpen] = useState(false);
@@ -19,8 +18,8 @@ export default function SideBarLeft() {
     const renderSaved = () => {
         if (open) {return (
             <ul>
-                {saved.map(s => (
-                    <li key={s.recipe_id}>{s.recipes.title}</li>
+                {saved.map(recipe => (
+                    <li key={recipe.recipe_id}>{recipe.recipes.title}</li>
                 ))}
             </ul>
         );} else return null;
