@@ -26,7 +26,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: grid;
-  grid-template-rows: 80px 1fr;
+  grid-template-rows: 100px 1fr;
   grid-template-columns: 200px 1fr;
   grid-template-areas: 
     "header header"
@@ -36,7 +36,7 @@ body {
 
 aside {
   grid-area: sidebar;
-  background-color: #e96341;
+  background-color: #bd4729;
 }
 
 main {
@@ -47,8 +47,8 @@ main {
 header {
   grid-area: header;
   font-family: monospace;
-  background-color: #61c4a3;
-  color: black;
+  background-color: #363636;
+  color: rgb(255, 255, 255);
   display: flex;
   align-items: center;
 }
