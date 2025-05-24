@@ -8,6 +8,7 @@ export default function SideBarLeft() {
     const [openCats, setOpenCats] = useState(false);
     const [saved, setSaved] = useState([]);
 
+    //store data from list into saved
     useEffect(() => {
         async function loadSaved() {
             const { data: user_saved } = await supabase.from("user_saved").select('*,recipes(*)');
@@ -20,6 +21,7 @@ export default function SideBarLeft() {
         loadSaved();
     }, []);
 
+    //function to count rows in each filtered list
     const counts = saved.reduce((acc, recipe) => {
         acc[recipe.category] = (acc[recipe.category] || 0) + 1;
         return acc;
@@ -33,20 +35,11 @@ export default function SideBarLeft() {
         new Set(saved.map(recipe => recipe.category))
     ).filter(cat => cat !== 'favorite' && cat !== 'Uncategorized');
 
+    //array for all categories
     const allCats = ['favorite', ...dynamicCats, 'Uncategorized'];
 
+    //toggle which cats are open
     const toggleCat = cat => setOpenCats(prev => ({ ...prev, [cat]: !prev[cat] }));
-
-    /*const renderSaved = () => {
-        if (open) {return (
-            <ul>
-                {saved.map(recipe => (
-                    <li key={recipe.recipe_id}>{recipe.recipes.title}</li>
-                ))}
-            </ul>
-        );} else return null;
-        
-    };*/
 
     return (
         <div>

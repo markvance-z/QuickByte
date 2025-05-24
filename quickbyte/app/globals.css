@@ -29,9 +29,9 @@ body {
   grid-template-rows: 100px 1fr;
   grid-template-columns: 200px 1fr;
   grid-template-areas: 
-    "header header"
-    "sidebar main"
-    "sidebar main";
+    "header header header"
+    "sidebar main main"
+    "sidebar main main";
 }
 
 aside {
@@ -50,7 +50,7 @@ header {
   background-color: #363636;
   color: rgb(255, 255, 255);
   display: flex;
-  align-items: center;
+  align-items: top;
 }
 
 .title {
