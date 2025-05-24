@@ -1,18 +1,38 @@
-import React from 'react';
+'use client';
+
+import React, {useState, useEffect} from 'react';
 import supabase from '../../lib/supabaseClient';
+ 
 
+export default function SideBarLeft() {
+    const [open, setOpen] = useState(false);
+    const [saved, setSaved] = useState([]);
 
-export default async function SideBarLeft() {
-    const { data: user_saved } = await supabase.from("user_saved").select('*,recipes(*)');
-    
-    const { data: recipes } = await supabase.from("recipes").select();
+    useEffect(() => {
+        async function loadSaved() {
+            const { data: user_saved } = await supabase.from("user_saved").select('*,recipes(*)');
+            setSaved(user_saved);
+        }
+        loadSaved();
+    }, []);
 
-    return <div>
-            <span>▽ Uncategorized</span>
+    const renderSaved = () => {
+        if (open) {return (
             <ul>
-                {user_saved.map((user_save) => (
-                    <li key={user_save.recipe_id}>{user_save.recipes.title}</li>
+                {saved.map(s => (
+                    <li key={s.recipe_id}>{s.recipes.title}</li>
                 ))}
             </ul>
+        );} else return null;
+        
+    };
+
+    return (
+        <div>
+            <button onClick={() => setOpen(o => !o)}>
+                {open ? '▽' : '▷'} Uncategorized
+            </button>
+            {renderSaved()}
         </div>
+    );
 }
