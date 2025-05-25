@@ -18,15 +18,7 @@ export default function Home() {
           </Link>
           <Link href="/login">
             <button className={styles.button}>Log In</button>
-          </Link>        
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />  
+          </Link>      
         </div>
       </main>
       
