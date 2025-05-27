@@ -8,6 +8,8 @@ export default function SideBarLeft() {
     //Cat, short for categories
     const [openCats, setOpenCats] = useState(false);
     const [saved, setSaved] = useState([]);
+    const [query, setQuery] = useState("");
+
 
     //listen for auth changes
     useEffect(() => {
@@ -59,6 +61,8 @@ export default function SideBarLeft() {
         new Set(saved.map(recipe => recipe.category))
     ).filter(cat => cat !== 'favorite' && cat !== 'Uncategorized');
 
+
+
     //array for all categories
     const allCats = ['favorite', ...dynamicCats, 'Uncategorized'];
 
@@ -67,23 +71,29 @@ export default function SideBarLeft() {
 
     return (
         <div>
-            {allCats.map(cat => (
-                <div key={cat}>
-                    <button onClick={() => toggleCat(cat)}>
-                        {openCats[cat] ? '▽' : '▷'} {cat} ({counts[cat]})
-                    </button>
-                    {openCats[cat] && (
-                        <ul>
-                            {saved
-                                .filter(recipe => recipe.category === cat)
-                                .map(recipe => (
-                                    <li key={recipe.recipe_id}>{recipe.recipes.title}</li>
-                                ))
-                            }
-                        </ul>
-                    )}
-                    </div>
-            ))}
+            <div> 
+                <input type="text" placeholder="Search..." onChange={e => setQuery(e.target.value)} />
+            </div>
+            <div>
+                {allCats.map(cat => (
+                    <div key={cat}>
+                        <button onClick={() => toggleCat(cat)}>
+                            {openCats[cat] ? '▽' : '▷'} {cat} ({counts[cat]})
+                        </button>
+                        {openCats[cat] && (
+                            <ul>
+                                {saved
+                                    .filter(recipe => recipe.category === cat)
+                                    .filter(recipe => recipe.recipes.title.toLowerCase().includes(query.toLowerCase()))
+                                    .map(recipe => (
+                                        <li key={recipe.recipe_id}>{recipe.recipes.title}</li>
+                                    ))
+                                }
+                            </ul>
+                        )}
+                        </div>
+                ))}
+            </div>
         </div>
     );
 }
