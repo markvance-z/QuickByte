@@ -9,7 +9,7 @@ export default function SideBarLeft() {
     const [openCats, setOpenCats] = useState(false);
     const [saved, setSaved] = useState([]);
     const [query, setQuery] = useState("");
-
+    const [tags, setTags] = useState([]);
 
     //listen for auth changes
     useEffect(() => {
@@ -46,9 +46,10 @@ export default function SideBarLeft() {
         }
     }
 
-
     //function to count rows in each filtered list
     const counts = saved.reduce((acc, recipe) => {
+        const title = recipe.recipes.title.toLowerCase();
+        if(!title.includes(query.toLowerCase())) return acc;
         acc[recipe.category] = (acc[recipe.category] || 0) + 1;
         return acc;
     }, {});
@@ -62,7 +63,6 @@ export default function SideBarLeft() {
     ).filter(cat => cat !== 'favorite' && cat !== 'Uncategorized');
 
 
-
     //array for all categories
     const allCats = ['favorite', ...dynamicCats, 'Uncategorized'];
 
@@ -73,6 +73,7 @@ export default function SideBarLeft() {
         <div>
             <div> 
                 <input type="text" placeholder="Search..." onChange={e => setQuery(e.target.value)} />
+                <button >+</button>
             </div>
             <div>
                 {allCats.map(cat => (
