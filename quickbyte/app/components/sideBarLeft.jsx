@@ -4,22 +4,46 @@ import React, {useState, useEffect} from 'react';
 import supabase from '../../lib/supabaseClient';
 
 export default function SideBarLeft() {
+    
     //Cat, short for categories
     const [openCats, setOpenCats] = useState(false);
     const [saved, setSaved] = useState([]);
 
-    //store data from list into saved
+    //listen for auth changes
     useEffect(() => {
-        async function loadSaved() {
-            const { data: user_saved } = await supabase.from("user_saved").select('*,recipes(*)');
-            const formatted = user_saved.map(recipe => ({
-                ...recipe,
-                category: recipe.category ?? 'Uncategorized'
-            }));
-            setSaved(formatted);
-        }
-        loadSaved();
+        const {data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+            loadSaved(session ? session.user : null);
+        });
+
+        loadSaved(supabase.auth.user);
+        return () => {
+            listener.subscription.unsubscribe();
+        };
     }, []);
+
+    async function loadSaved(user) {
+        if (!user) {
+            setSaved([]);
+            return;
+        }
+
+        try {
+            const { data: user_saved } = await supabase
+                .from("user_saved")
+                .select('*,recipes(*)')
+                .eq('user_id', user.id);
+            setSaved(
+                user_saved.map((recipe) => ({
+                    ...recipe,
+                    category: recipe.category ?? 'Uncategorized'
+                }))
+            );
+        } catch (err) {
+            console.error('loadSaved error: ', err);
+            setSaved([]);
+        }
+    }
+
 
     //function to count rows in each filtered list
     const counts = saved.reduce((acc, recipe) => {
