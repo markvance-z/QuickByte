@@ -13,8 +13,6 @@ export default function SideBarLeft() {
     const [openFilter, setOpenFilter] = useState(false);
     const [selectedTags, setSelectedTags] = useState([]);
 
-    console.log(saved);
-    console.log(tags);
     //listen for auth changes
     useEffect(() => {
         const {data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -66,12 +64,13 @@ export default function SideBarLeft() {
         try {
             const { data: user_saved } = await supabase
                 .from("user_saved")
-                .select('*,recipes(*)')
+                .select('*,recipes(title, recipe_tags(tag_id, tags(tag_name)))')
                 .eq('user_id', user.id);
             setSaved(
                 user_saved.map((recipe) => ({
                     ...recipe,
-                    category: recipe.category ?? 'Uncategorized'
+                    category: recipe.category ?? 'Uncategorized',
+                    tag_ids : recipe.recipe_tags.map(t => t.tag_id)
                 }))
             );
         } catch (err) {
@@ -102,9 +101,6 @@ export default function SideBarLeft() {
     //toggle which cats are open
     const toggleCat = cat => setOpenCats(prev => ({ ...prev, [cat]: !prev[cat] }));
     const toggleTag = tag => setSelectedTags(prev => prev.includes(tag.id) ? prev.filter(t => t !== tag.id): [...prev, tag.id]);
-
-
-
 
     return (
         <div>
