@@ -69,6 +69,9 @@ export default function Dashboard() {
     <div>
       <h1>Welcome to your dashboard, {username}!</h1>
       <p>This is a protected route.</p>
+      <button onClick={() => supabase.auth.signOut().then(() => router.push("/login"))}>
+        Sign Out
+      </button>
     </div>
   );
 }
