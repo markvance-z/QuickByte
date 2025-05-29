@@ -13,7 +13,7 @@ export default function SideBarLeft() {
     const [openFilter, setOpenFilter] = useState(false);
     const [selectedTags, setSelectedTags] = useState([]);
 
-    //listen for auth changes
+    //listen for auth changes. Update the saved list when auth state changes
     useEffect(() => {
         const {data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
             loadSaved(session ? session.user : null);
@@ -25,6 +25,7 @@ export default function SideBarLeft() {
         };
     }, []);
 
+    //get tags from supabase when user saved is populated
     useEffect(() => {
         if (saved.length > 0) {
             loadTags();
@@ -64,13 +65,12 @@ export default function SideBarLeft() {
         try {
             const { data: user_saved } = await supabase
                 .from("user_saved")
-                .select('*,recipes(title, recipe_tags(tag_id, tags(tag_name)))')
+                .select('*,recipes(*)')
                 .eq('user_id', user.id);
             setSaved(
                 user_saved.map((recipe) => ({
                     ...recipe,
-                    category: recipe.category ?? 'Uncategorized',
-                    tag_ids : recipe.recipe_tags.map(t => t.tag_id)
+                    category: recipe.category ?? 'Uncategorized'
                 }))
             );
         } catch (err) {
