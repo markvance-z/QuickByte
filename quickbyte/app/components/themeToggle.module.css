@@ -1,0 +1,40 @@
+.themeToggleContainer {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;  
+  padding: 0.5rem;
+  border-radius: 0.8rem; 
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.switch {
+    display: flex; 
+    justify-content: center;
+    align-items: center;   
+    width: 3rem;
+    height: 3rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    background-color: red;
+}
+
+.switch:hover {
+    background-color: gold
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.light {
+    background-color: #f0f0f0;
+}
+
+.dark {
+    background-color: #333;
+}
