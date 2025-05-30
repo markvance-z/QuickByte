@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from '../../lib/supabaseClient';
+import styles from './login.module.css';
 
 export default function Login() {
   const router = useRouter();
@@ -33,7 +34,9 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <div className={styles.container}>
+    <form onSubmit={handleLogin} className={styles.form}>
+    <h2>Log In</h2>
       <input
         type="email"
         placeholder="Email"
@@ -53,5 +56,6 @@ export default function Login() {
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </form>
+    </div>
   );
 }
