@@ -20,8 +20,7 @@ export default function Home() {
             <button className={styles.button}>Log In</button>
           </Link>      
         </div>
-      </main>
-      
+      </main>      
     </div>
   );
 }
