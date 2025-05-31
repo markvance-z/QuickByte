@@ -35,6 +35,8 @@ body {
 aside {
   grid-area: sidebar;
   background-color: #bd4729;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+  border-right: 2 px solid #ccc;
 }
 
 main {
@@ -45,8 +47,9 @@ main {
 header {
   grid-area: header;
   font-family: monospace;
-  background-color: #363636;
-  color: rgb(255, 255, 255);
+  background-color: var(--background);
+  color: var(--foreground);  
+  border-bottom: 1px solid #ccc;
   display: flex;
   align-items: top;
 }
