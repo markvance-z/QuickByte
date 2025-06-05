@@ -4,7 +4,7 @@ import SideBarLeft from "./components/sideBarLeft";
 import Header from "./components/header";
 import ThemeToggle from "./components/themeToggle";
 import Provider from "./provider/themeProvider";
-
+import ViewRecipe from "./components/viewRecipe";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,22 +25,24 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-        <body className={`relative min-h-screen bg-white text-black dark:bg-black dark:text-white ${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" >
+        <body className="wrapper">
           <Provider>             
             <ThemeToggle />            
           </Provider>
           <header>
             < Header />
-          </header>        
-
-          <aside> 
+          </header>
+          <br></br>       
+          <aside className="left"> 
             < SideBarLeft />
           </aside>
-
-          <main>
+          <main className="middle">
             {children}
           </main> 
+          <aside className="right">
+            < ViewRecipe />
+          </aside>
       </body>
     </html>
   );
