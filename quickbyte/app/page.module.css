@@ -1,5 +1,4 @@
 .page {
-  background-color: #f9f9f9;
   --gray-rgb: 0, 0, 0;
   --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
   --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
@@ -8,7 +7,7 @@
   --button-secondary-hover: #f2f2f2;
 
   display: flex;
-  min-height: 100svh;
+  min-height: 98vh;
   font-family: var(--font-geist-sans);
 }
 
@@ -20,7 +19,6 @@
 }
 
 .main {
-  background: white;
   padding: 48px 32px;
   border-radius: 16px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
@@ -29,7 +27,6 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 24px;
   min-height: 80vh;
   width: 100%;
   max-width: 500px;
