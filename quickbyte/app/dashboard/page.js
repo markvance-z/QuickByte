@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from '../../lib/supabaseClient';
+import Link from "next/link";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -98,7 +99,7 @@ export default function Dashboard() {
   <>
     <div>
       <h1>Welcome to your dashboard, {username}!</h1>
-    </div>
+    </div>   
 
     <div>
       <input
@@ -107,7 +108,7 @@ export default function Dashboard() {
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search recipes"
         className="border rounded px-2 py-1"
-      />
+      />        
 
       <button
         onClick={() => console.log("searching for:", query)}
@@ -157,6 +158,19 @@ export default function Dashboard() {
         </button>
       </div>
     )}
+    
+    <div className="container">
+      <button
+        className="Btn"
+        onClick={async () => {
+          await supabase.auth.signOut();
+          router.push("/login");
+        }}
+        type="button"
+      >
+        Logout
+      </button>
+    </div>
   </>
 );
 }
