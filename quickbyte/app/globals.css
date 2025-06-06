@@ -3,9 +3,18 @@
   --foreground: #171717;
 }
 
+html.light {
+  --background: #87cefa;
+  --foreground: #ffffff;
+  --left-background: #98fb98; 
+  --right-background: #98fb98;
+}
+
 html.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --left-background: #bd4729; 
+  --right-background: #bd4729;
 }
 
 html,
@@ -37,7 +46,7 @@ body {
   border-style: solid;
   border-radius: 12px;
   border-color: rgba(158, 158, 158, 0.486);
-  background-color: #bd4729;
+  background-color: var(--left-background);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
   border-right: 2 px solid #ccc;
 }
@@ -49,7 +58,7 @@ body {
   grid-column: 4/6;
   border-radius: 12px;
   border-style: solid;
-  background-color: #bd4729;
+  background-color: var(--right-background);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
   border-right: 2 px solid #ccc;
   border-color: rgba(158, 158, 158, 0.486);

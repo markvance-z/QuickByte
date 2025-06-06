@@ -15,12 +15,12 @@ export default function ThemeToggle() {
     if (!mounted) {
         return null; // Prevents hydration mismatch
     }
-    return (
+    return (        
         <div className={styles.themeToggleContainer}>
         <Switch
             checked={theme === "dark"}
             onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className={`${styles.switch} ${theme === "dark" ? styles.dark : styles.light}`}
+            className={`${styles.switch} ${theme === "dark" ? styles.dark : styles.light}`}            
         >            
             {theme === "dark" ? (
                 <MoonIcon className={styles.icon} />
@@ -29,6 +29,6 @@ export default function ThemeToggle() {
             )}
         </Switch>
         <span className={styles.toggleText}>Toggle Theme</span>
-        </div>
+        </div>        
         );
     }
