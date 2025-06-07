@@ -13,8 +13,8 @@ html.light {
 html.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --left-background: #bd4729; 
-  --right-background: #bd4729;
+  --left-background: #0b5f19; 
+  --right-background: #0b5f19;
 }
 
 html,
