@@ -14,9 +14,6 @@ export default function Dashboard() {
   const [allRecipes, setAllRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
-
-  
-
   useEffect(() => {
     const fetchProfile = async () => {
       const {
@@ -31,8 +28,6 @@ export default function Dashboard() {
 
       const userId = session.user.id;
 
-
-
       // Try to get the profile
       let { data: profile, error: profileError } = await supabase
         .from("profiles")
@@ -46,7 +41,6 @@ export default function Dashboard() {
         return;
       }
 
-      
       if (!profile) {
         const usernameFromMetadata = session.user.user_metadata?.username || "NewUser";
 
@@ -71,7 +65,6 @@ export default function Dashboard() {
     fetchProfile();
   }, [router]);
 
-
   const getRecipes = async (query) => {
     console.log("searching for: ", query);
     const { data, error } = await supabase
@@ -92,7 +85,6 @@ export default function Dashboard() {
     setAllRecipes([]);
     setQuery("");
   };
-
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -144,21 +136,6 @@ export default function Dashboard() {
               </li>
             ))}
         </ul>
-      </div>
-    )}
-
-    {selectedRecipe && (
-      <div className="mt-4 p-4 border rounded bg-gray-100">
-       
-        <p>
-          <strong>{selectedRecipe.title} ingredients:</strong> {selectedRecipe.ingedients}
-        </p>
-        <button
-          onClick={() => setSelectedRecipe(null)}
-          className="mt-2 text-sm text-blue-500 underline"
-        >
-          Close
-        </button>
       </div>
     )}
   </>
