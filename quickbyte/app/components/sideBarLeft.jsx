@@ -15,9 +15,7 @@ export default function SideBarLeft() {
     const [allRecipes, setAllRecipes] = useState([]);
     const [user, setUser] = useState(null);
     const [selectedRecipe, setSelectedRecipe] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [loadingAuth, setLoadingAuth] = useState(true);
-    
+    const [showModal, setShowModal] = useState(false);    
 
     //listen for auth changes. Update the saved list when auth state changes
     useEffect(() => {
@@ -30,7 +28,6 @@ export default function SideBarLeft() {
         supabase.auth.getUser().then(({ data: { user } }) => {
             setUser(user);            
             loadSaved(user);
-            setLoadingAuth(false);
         });
 
         return () => {
