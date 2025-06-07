@@ -158,19 +158,6 @@ export default function Dashboard() {
         </button>
       </div>
     )}
-    
-    <div className="container">
-      <button
-        className="Btn"
-        onClick={async () => {
-          await supabase.auth.signOut();
-          router.push("/login");
-        }}
-        type="button"
-      >
-        Logout
-      </button>
-    </div>
   </>
 );
 }
