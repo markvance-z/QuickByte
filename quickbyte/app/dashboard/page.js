@@ -13,16 +13,9 @@ export default function Dashboard() {
   const [query, setQuery] = useState("");
   const [allRecipes, setAllRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
-  
 
-  //mock database
-  const mockRecipes = [
-  {id:1, title: "Chicken breast", ingedients: "chicken, salt, pepper, olive oil"}, 
-  {id:2, title: "Kale salad", ingedients: "kale, tomatoes, onion, salt, pepper, olive oil"}, 
-  {id:3, title: "Gnocchi", ingedients: "gnocchi, salt, pepper, olive oil"}, 
-  {id:4, title: "Greek yogurt", ingedients: "greek yogurt, blueberries, honey"},
-  {id:5, title: "Sushi roll", ingedients: "white rice, seaweed, ahi tuna"} 
-  ];
+
+  
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -38,21 +31,7 @@ export default function Dashboard() {
 
       const userId = session.user.id;
 
-      setAllRecipes(mockRecipes);
-      console.log("mock recipes loaded", mockRecipes);
 
-      /* async function loadAllRecipes() {
-            try {
-                const { data, error } = await supabase.from('recipes').select('*');
-                if(error) throw error;
-                setAllRecipes(data);
-                console.log("recipes loaded", data);
-            } catch(err) {
-                console.error('Error loading all recipes:', err);
-            }
-        }
-      
-      loadAllRecipes(); */
 
       // Try to get the profile
       let { data: profile, error: profileError } = await supabase
@@ -92,6 +71,29 @@ export default function Dashboard() {
     fetchProfile();
   }, [router]);
 
+
+  const getRecipes = async (query) => {
+    console.log("searching for: ", query);
+    const { data, error } = await supabase
+      .from("recipes")
+      .select()
+      .textSearch("title", query)
+      .limit(10);
+
+      if (error) {
+        console.log("error searching: ", error);
+        return null;
+      }
+
+      setAllRecipes(data);
+  };
+
+  const resetSearch = () => {
+    setAllRecipes([]);
+    setQuery("");
+  };
+
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -111,26 +113,27 @@ export default function Dashboard() {
       />        
 
       <button
-        onClick={() => console.log("searching for:", query)}
+        onClick={() => {getRecipes(query)}}
         className="ml-2 px-3 py-1 bg-blue-500 text-white rounded"
       >
         Search
       </button>
+      <button
+        onClick={() => {resetSearch()}}
+        className="ml-2 px-3 py-1 bg-blue-500 text-white rounded"
+      >
+        Reset
+      </button>
     </div>
 
-    {query && (
+    {allRecipes.length > 0 && (
       <div>
         <h3>Search Results</h3>
         <ul>
           {allRecipes
-            .filter(
-              (recipe) =>
-                recipe.title?.toLowerCase().includes(query.toLowerCase()) &&
-                recipe.id
-            )
-            .map((recipe) => (
+            .map(recipe => (
               <li
-                key={`search-${recipe.id}`}
+                key={recipe.recipe_id}
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   console.log("Recipe clicked:", recipe);
