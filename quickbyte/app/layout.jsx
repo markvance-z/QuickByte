@@ -5,6 +5,7 @@ import Header from "./components/header";
 import ThemeToggle from "./components/themeToggle";
 import Provider from "./provider/themeProvider";
 import ViewRecipe from "./components/viewRecipe";
+import SettingsButton from "./components/settingsButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,8 +28,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" >
         <body className="wrapper">
-          <Provider>             
-            <ThemeToggle />            
+          <Provider>    
+            <ThemeToggle />
+            <div className="bottom-right-controls">
+              <SettingsButton />    
+            </div>     
           </Provider>
           <header>
             < Header />

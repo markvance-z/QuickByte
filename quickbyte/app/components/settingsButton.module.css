@@ -1,0 +1,14 @@
+.settingsButton {
+    padding: 0.5rem 1rem;
+    border: 5px solid #000000;
+    border-radius: 30px;
+    background-color: rgb(255, 255, 255);
+    color: #000000;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.settingsButton:hover {
+    background-color: gold;
+}

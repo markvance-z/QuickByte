@@ -36,6 +36,17 @@ body {
   grid-gap: 10px;
   width: 98vw;
   height: 98vh;
+  position: relative;
+}
+
+.bottom-right-controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .left {
