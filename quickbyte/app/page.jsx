@@ -3,8 +3,6 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import supabase from '../lib/supabaseClient';
 
 export default function Home() {
   return (
@@ -22,15 +20,16 @@ export default function Home() {
             </Link>
 
             {}
-            <Link href="/page2">
+            {/* <Link href="/page2">
               <button className={styles.button}>Add Recipe</button>
-            </Link>
+            </Link> */}
           </div>
         </main>
       </div>
     </div>
   );
 }
+
 
 
 
