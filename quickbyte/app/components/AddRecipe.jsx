@@ -1,40 +1,21 @@
 'use client';
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import supabase from '../../lib/supabaseClient';
 
 export default function AddRecipe() {
   const [formData, setFormData] = useState({
     title: '',
-    author: '',
+    time: '',
     description: '',
-    total_minutes: '',
-    nutrition: '',
-    ingredients_name: '',
-    steps: '',
-    tag_name: ''
+    ingredients: ''
   });
 
-  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (data?.session?.user?.id) {
-        setUserId(data.session.user.id);
-      } else {
-        setError('You must be logged in to add a recipe.');
-      }
-    };
-
-    getUser();
-  }, []);
+  const [message, setMessage] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value
     }));
@@ -43,104 +24,174 @@ export default function AddRecipe() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setMessage(null);
 
-    const { data, error } = await supabase
-      .from('recipes')
-      .insert([
-        {
-          ...formData,
-          total_minutes: parseInt(formData.total_minutes) || null,
-          created_at: new Date().toISOString(),
-          user_id: userId
-        }
-      ]);
+    try {
+      // Debug: Log form data
+      console.log('Form data before validation:', formData);
 
-    if (error) {
-      setError(error.message);
-    } else {
-      alert('Recipe added successfully!');
-      setFormData({
-        title: '',
-        author: '',
-        description: '',
-        total_minutes: '',
-        nutrition: '',
-        ingredients_name: '',
-        steps: '',
-        tag_name: ''
-      });
+      // Validate required fields
+      if (!formData.title.trim()) {
+        setMessage({ type: 'error', text: 'Title is required' });
+        setLoading(false);
+        return;
+      }
+
+      if (!formData.time || parseInt(formData.time) <= 0) {
+        setMessage({ type: 'error', text: 'Valid time is required' });
+        setLoading(false);
+        return;
+      }
+
+      // Prepare the data to insert
+      const insertData = {
+        title: formData.title.trim(),
+        time: parseInt(formData.time),
+        description: formData.description.trim() || null,
+        ingredients: formData.ingredients.trim() || null
+      };
+
+      // Debug: Log what we're trying to insert
+      console.log('Data being inserted:', insertData);
+
+      // Insert into database - matches your 'precipes' table structure
+      const { data, error } = await supabase
+        .from('precipes')
+        .insert([insertData])
+        .select();
+
+      // Debug: Log the response
+      console.log('Supabase response:', { data, error });
+
+      if (error) {
+        console.error("Insert error details:", error);
+        setMessage({ type: 'error', text: `Database error: ${error.message}` });
+      } else if (data && data.length > 0) {
+        const newRecipe = data[0];
+        console.log("Recipe inserted successfully:", newRecipe);
+        setMessage({ 
+          type: 'success', 
+          text: `Recipe "${newRecipe.title}" added successfully! ID: ${newRecipe.id}` 
+        });
+        
+        // Reset form
+        setFormData({
+          title: '',
+          time: '',
+          description: '',
+          ingredients: ''
+        });
+      } else {
+        console.log("No data returned, but no error either");
+        setMessage({ type: 'error', text: 'No data returned from insert operation' });
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setMessage({ type: 'error', text: 'An unexpected error occurred' });
     }
 
     setLoading(false);
   };
 
-  const inputStyle = {
-    padding: '10px',
-    fontSize: '1rem',
-    border: '1px solid #555',
-    borderRadius: '8px',
-    width: '100%',
-    backgroundColor: '#1e1e1e',
-    color: '#fff',
-    boxSizing: 'border-box'
-  };
-
   return (
-    <div
-      style={{
-        maxWidth: '600px',
-        margin: '2rem auto',
-        padding: '2rem',
-        border: '1px solid #333',
-        borderRadius: '12px',
-        backgroundColor: '#111',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.4)'
-      }}
-    >
-      <h2 style={{ textAlign: 'center', color: '#fff', marginBottom: '1.5rem' }}>
-        Add a New Recipe
-      </h2>
+    <div style={{ 
+      maxWidth: 500, 
+      margin: '2rem auto', 
+      padding: '1rem', 
+      border: '1px solid #ccc', 
+      borderRadius: 8 
+    }}>
+      <h2>Add a Recipe</h2>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          width: '60%'
-        }}
-      >
-        <input style={inputStyle} name="title" placeholder="Title" value={formData.title} onChange={handleChange} required />
-        <input style={inputStyle} name="author" placeholder="Author" value={formData.author} onChange={handleChange} />
-        <textarea style={inputStyle} name="description" placeholder="Description" value={formData.description} onChange={handleChange} rows={3} />
-        <input style={inputStyle} name="total_minutes" placeholder="Total Minutes" type="number" value={formData.total_minutes} onChange={handleChange} />
-        <input style={inputStyle} name="nutrition" placeholder="Nutrition Info" value={formData.nutrition} onChange={handleChange} />
-        <textarea style={inputStyle} name="ingredients_name" placeholder="Ingredients" value={formData.ingredients_name} onChange={handleChange} rows={3} />
-        <textarea style={inputStyle} name="steps" placeholder="Steps" value={formData.steps} onChange={handleChange} rows={4} />
-        <input style={inputStyle} name="tag_name" placeholder="Tag Name" value={formData.tag_name} onChange={handleChange} />
-
-        <button
-          type="submit"
-          disabled={loading || !userId}
-          style={{
-            padding: '10px',
-            fontSize: '1rem',
-            borderRadius: '8px',
+      <form onSubmit={handleSubmit}>
+        <input
+          name="title"
+          placeholder="Title *"
+          value={formData.title}
+          onChange={handleChange}
+          required
+          style={{ 
+            width: '100%', 
+            padding: 8, 
+            marginBottom: 12,
+            boxSizing: 'border-box'
+          }}
+        />
+        
+        <input
+          name="time"
+          type="number"
+          min="1"
+          placeholder="Time (minutes) *"
+          value={formData.time}
+          onChange={handleChange}
+          required
+          style={{ 
+            width: '100%', 
+            padding: 8, 
+            marginBottom: 12,
+            boxSizing: 'border-box'
+          }}
+        />
+        
+        <textarea
+          name="description"
+          placeholder="Description (optional)"
+          value={formData.description}
+          onChange={handleChange}
+          rows={3}
+          style={{ 
+            width: '100%', 
+            padding: 8, 
+            marginBottom: 12,
+            boxSizing: 'border-box',
+            resize: 'vertical'
+          }}
+        />
+        
+        <textarea
+          name="ingredients"
+          placeholder="Ingredients (optional)"
+          value={formData.ingredients}
+          onChange={handleChange}
+          rows={3}
+          style={{ 
+            width: '100%', 
+            padding: 8, 
+            marginBottom: 12,
+            boxSizing: 'border-box',
+            resize: 'vertical'
+          }}
+        />
+        
+        <button 
+          type="submit" 
+          disabled={loading}
+          style={{ 
+            padding: '10px 20px',
+            backgroundColor: loading ? '#ccc' : '#007bff',
+            color: 'white',
             border: 'none',
-            backgroundColor: '#4CAF50',
-            color: '#fff',
-            cursor: loading || !userId ? 'not-allowed' : 'pointer',
-            opacity: loading || !userId ? 0.6 : 1
+            borderRadius: 4,
+            cursor: loading ? 'not-allowed' : 'pointer'
           }}
         >
           {loading ? 'Adding...' : 'Add Recipe'}
         </button>
       </form>
 
-      {error && <p style={{ color: 'red', marginTop: '1rem' }}>Error: {error}</p>}
+      {message && (
+        <p style={{ 
+          marginTop: 12, 
+          padding: 8,
+          borderRadius: 4,
+          backgroundColor: message.type === 'error' ? '#ffebee' : '#e8f5e8',
+          color: message.type === 'error' ? '#c62828' : '#2e7d32',
+          border: `1px solid ${message.type === 'error' ? '#ffcdd2' : '#c8e6c9'}`
+        }}>
+          {message.text}
+        </p>
+      )}
     </div>
   );
 }
-
-

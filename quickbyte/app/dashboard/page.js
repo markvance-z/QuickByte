@@ -18,16 +18,13 @@ export default function Dashboard() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    author: '',
+    time: '',
     description: '',
-    total_minutes: '',
-    nutrition: '',
-    ingredients_name: '',
-    steps: '',
-    tag_name: ''
+    ingredients: ''
   });
   const [formError, setFormError] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [formSuccess, setFormSuccess] = useState(null);
 
   // Fetch session and user profile
   useEffect(() => {
@@ -82,10 +79,10 @@ export default function Dashboard() {
     fetchProfile();
   }, [router]);
 
-  // Recipe search
+  // Recipe search - FIXED: Changed from 'precipe' to 'precipes'
   const getRecipes = async (query) => {
     const { data, error } = await supabase
-      .from("recipes")
+      .from("precipes") // Fixed table name
       .select()
       .textSearch("title", query)
       .limit(10);
@@ -113,33 +110,51 @@ export default function Dashboard() {
     e.preventDefault();
     setFormLoading(true);
     setFormError(null);
+    setFormSuccess(null);
 
+    // Debug logging
+    console.log('Form data being submitted:', formData);
+
+    // Prepare data for insertion
+    const insertData = {
+      title: formData.title.trim(),
+      time: parseInt(formData.time) || null,
+      description: formData.description.trim() || null,
+      ingredients: formData.ingredients.trim() || null
+      // Removed created_at - let Supabase handle it automatically
+    };
+
+    console.log('Data being inserted:', insertData);
+
+    // FIXED: Changed table name and added .select()
     const { data, error } = await supabase
-      .from('recipes')
-      .insert([
-        {
-          ...formData,
-          total_minutes: parseInt(formData.total_minutes) || null,
-          created_at: new Date().toISOString(),
-          user_id: session.user.id,
-        }
-      ]);
+      .from('precipes') // Fixed table name
+      .insert([insertData])
+      .select(); // Added .select() to return inserted data
+
+    console.log('Supabase response:', { data, error });
 
     if (error) {
+      console.error('Insert error:', error);
       setFormError(error.message);
-    } else {
-      alert("Recipe added successfully!");
+    } else if (data && data.length > 0) {
+      const newRecipe = data[0];
+      console.log('Recipe inserted successfully:', newRecipe);
+      setFormSuccess(`Recipe "${newRecipe.title}" added successfully!`);
       setFormData({
         title: '',
-        author: '',
+        time: '',
         description: '',
-        total_minutes: '',
-        nutrition: '',
-        ingredients_name: '',
-        steps: '',
-        tag_name: ''
+        ingredients: ''
       });
-      setShowAddForm(false); // hide form after submission
+      setShowAddForm(false);
+
+      // Refresh recipe list after adding new one
+      if (query) {
+        getRecipes(query);
+      }
+    } else {
+      setFormError('No data returned from insert operation');
     }
 
     setFormLoading(false);
@@ -154,27 +169,73 @@ export default function Dashboard() {
 
       {/* Add Recipe Toggle Button */}
       <button
-        onClick={() => setShowAddForm(prev => !prev)}
+        onClick={() => {
+          setShowAddForm(prev => !prev);
+          setFormSuccess(null); // clear success message on toggle
+          setFormError(null); // clear error message on toggle
+        }}
         className="mb-4 px-4 py-2 bg-green-600 text-white rounded"
       >
-        {showAddForm ? "Hide" : "Add Recipe"}
+        {showAddForm ? "Hide Form" : "Add Recipe"}
       </button>
+
+      {/* Success message outside form so it persists */}
+      {formSuccess && (
+        <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+          {formSuccess}
+        </div>
+      )}
 
       {/* Add Recipe Form */}
       {showAddForm && (
         <form onSubmit={handleFormSubmit} className="mb-6 space-y-2 max-w-xl border p-4 rounded bg-gray-50">
-          <input name="title" placeholder="Title" value={formData.title} onChange={handleFormChange} required className="w-full border px-2 py-1" />
-          <input name="author" placeholder="Author" value={formData.author} onChange={handleFormChange} className="w-full border px-2 py-1" />
-          <textarea name="description" placeholder="Description" value={formData.description} onChange={handleFormChange} className="w-full border px-2 py-1" />
-          <input name="total_minutes" type="number" placeholder="Total Minutes" value={formData.total_minutes} onChange={handleFormChange} className="w-full border px-2 py-1" />
-          <input name="nutrition" placeholder="Nutrition Info" value={formData.nutrition} onChange={handleFormChange} className="w-full border px-2 py-1" />
-          <textarea name="ingredients_name" placeholder="Ingredients" value={formData.ingredients_name} onChange={handleFormChange} className="w-full border px-2 py-1" />
-          <textarea name="steps" placeholder="Steps" value={formData.steps} onChange={handleFormChange} className="w-full border px-2 py-1" />
-          <input name="tag_name" placeholder="Tag Name" value={formData.tag_name} onChange={handleFormChange} className="w-full border px-2 py-1" />
-          <button type="submit" disabled={formLoading} className="bg-blue-600 text-white px-4 py-2 rounded">
-            {formLoading ? "Adding..." : "Add Recipe"}
+          <input
+            name="title"
+            placeholder="Title *"
+            value={formData.title}
+            onChange={handleFormChange}
+            required
+            className="w-full border px-2 py-1 rounded"
+          />
+          <input
+            name="time"
+            type="number"
+            placeholder="Time (minutes) *"
+            value={formData.time}
+            onChange={handleFormChange}
+            required
+            min="1"
+            className="w-full border px-2 py-1 rounded"
+          />
+          <textarea
+            name="description"
+            placeholder="Description (optional)"
+            value={formData.description}
+            onChange={handleFormChange}
+            className="w-full border px-2 py-1 rounded"
+            rows="3"
+          />
+          <textarea
+            name="ingredients"
+            placeholder="Ingredients (optional)"
+            value={formData.ingredients}
+            onChange={handleFormChange}
+            className="w-full border px-2 py-1 rounded"
+            rows="3"
+          />
+          <button
+            type="submit"
+            disabled={formLoading}
+            className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-blue-300"
+          >
+            {formLoading ? "Adding..." : "Save Recipe"}
           </button>
-          {formError && <p className="text-red-600">Error: {formError}</p>}
+
+          {formError && (
+            <div className="p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+              Error: {formError}
+            </div>
+          )}
         </form>
       )}
 
@@ -204,12 +265,12 @@ export default function Dashboard() {
       {/* Search Results */}
       {allRecipes.length > 0 && (
         <div>
-          <h3>Search Results</h3>
+          <h3 className="font-semibold mb-2">Search Results</h3>
           <ul>
             {allRecipes.map(recipe => (
               <li
-                key={recipe.recipe_id}
-                className="cursor-pointer underline text-blue-700"
+                key={recipe.id} // Fixed: changed from recipe.ID to recipe.id
+                className="cursor-pointer underline text-blue-700 mb-1"
                 onClick={() => setSelectedRecipe(recipe)}
               >
                 {recipe.title}
@@ -222,7 +283,10 @@ export default function Dashboard() {
       {/* Recipe Details */}
       {selectedRecipe && (
         <div className="mt-4 p-4 border rounded bg-gray-100">
-          <p><strong>{selectedRecipe.title} ingredients:</strong> {selectedRecipe.ingredients_name}</p>
+          <p><strong>{selectedRecipe.title}</strong></p>
+          <p><strong>Time:</strong> {selectedRecipe.time} minutes</p>
+          <p><strong>Description:</strong> {selectedRecipe.description}</p>
+          <p><strong>Ingredients:</strong> {selectedRecipe.ingredients}</p>
           <button
             onClick={() => setSelectedRecipe(null)}
             className="mt-2 text-sm text-blue-500 underline"
@@ -234,8 +298,6 @@ export default function Dashboard() {
     </div>
   );
 }
-
-
 
 
 
