@@ -15,7 +15,6 @@ export default function Dashboard() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [session, setSession] = useState(null);
 
-<<<<<<< HEAD
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -28,8 +27,6 @@ export default function Dashboard() {
   const [formSuccess, setFormSuccess] = useState(null);
 
   // Fetch session and user profile
-=======
->>>>>>> 8a3768b489d0563b331b00c7286d63e4ef46a3c3
   useEffect(() => {
     const fetchProfile = async () => {
       const {
@@ -46,10 +43,6 @@ export default function Dashboard() {
 
       const userId = session.user.id;
 
-<<<<<<< HEAD
-=======
-      // Try to get the profile
->>>>>>> 8a3768b489d0563b331b00c7286d63e4ef46a3c3
       let { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("username")
@@ -86,10 +79,7 @@ export default function Dashboard() {
     fetchProfile();
   }, [router]);
 
-<<<<<<< HEAD
   // Recipe search - FIXED: Changed from 'precipe' to 'precipes'
-=======
->>>>>>> 8a3768b489d0563b331b00c7286d63e4ef46a3c3
   const getRecipes = async (query) => {
     const { data, error } = await supabase
       .from("precipes") // Fixed table name
@@ -110,7 +100,6 @@ export default function Dashboard() {
     setQuery("");
   };
 
-<<<<<<< HEAD
   // Form handlers
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -171,8 +160,6 @@ export default function Dashboard() {
     setFormLoading(false);
   };
 
-=======
->>>>>>> 8a3768b489d0563b331b00c7286d63e4ef46a3c3
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -289,7 +276,6 @@ export default function Dashboard() {
                 {recipe.title}
               </li>
             ))}
-<<<<<<< HEAD
           </ul>
         </div>
       )}
@@ -311,13 +297,6 @@ export default function Dashboard() {
       )}
     </div>
   );
-=======
-        </ul>
-      </div>
-    )}
-  </>
-);
->>>>>>> 8a3768b489d0563b331b00c7286d63e4ef46a3c3
 }
 
 
