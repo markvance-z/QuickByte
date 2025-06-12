@@ -1,15 +1,23 @@
 'use client'
 
-import Link from "next/link";
 import React from "react";
+import {useRouter, usePathname} from "next/navigation";
 import styles from './settingsButton.module.css';
 
 export default function SettingsButton() {
+    const router = useRouter();
+    const pathname = usePathname();
+    
+    const handleSettingsClick = () => {
+        if (pathname === '/settings') {
+            router.back();
+        } else {
+            router.push('/settings');
+        }
+    }
     return (
-        <Link href="/settings" passHref>
-            <button className={styles.settingsButton}>
+        <button className={styles.settingsButton} onClick={handleSettingsClick}>
                 Settings
-            </button>
-        </Link>
+        </button>
     )
 }
