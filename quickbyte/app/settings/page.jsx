@@ -3,8 +3,9 @@
 import React, {useState, useEffect} from 'react';
 import supabase from '../../lib/supabaseClient';
 import styles from './settingsPage.module.css';
-import ThemeToggle from '../components/themeToggle';
 import { useRouter } from 'next/navigation';
+
+const DEFAULT_AVATAR_URL = '/default-avatar.jpg';
 
 export default function SettingsPage() {
     const router = useRouter();
@@ -13,6 +14,9 @@ export default function SettingsPage() {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [avatarFile, setAvatarFile] = useState(null);
+    const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR_URL);
+
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -21,25 +25,33 @@ export default function SettingsPage() {
 
             if (userError) {
                 setError('Error fetching user: ' + userError.message);
+                setAvatarUrl(DEFAULT_AVATAR_URL);
                 setLoading(false);
                 return;
             }
 
             if (user) {
-                setEmail(user.email ||'');
+                setEmail(user.email || '');
 
                 const {data:profile, error:profileError} = await supabase
                     .from('profiles')
-                    .select('username')
+                    .select('username, avatar_url, avatar_filename')
                     .eq('id', user.id)
                     .single();
                     if (profileError && profileError.code !== 'PGRST116') {
                         setError('Error fetching profile: ' + profileError.message);
+                        setAvatarUrl(DEFAULT_AVATAR_URL);
                     } else if (profile) {
                         setUsername(profile.username || '');
+                        setAvatarUrl(profile.avatar_url || DEFAULT_AVATAR_URL);
                     } else {
                         setUsername(user.user_metadata?.username || '');
+                        setAvatarUrl(DEFAULT_AVATAR_URL);
                     }
+            } else {
+                setUsername('');
+                setEmail('');
+                setAvatarUrl(DEFAULT_AVATAR_URL);
             }
             setLoading(false);
         };
@@ -52,6 +64,7 @@ export default function SettingsPage() {
             } else {
                 setUsername('');
                 setEmail('');
+                setAvatarUrl(DEFAULT_AVATAR_URL);
             }
         });
         
@@ -74,22 +87,134 @@ export default function SettingsPage() {
             return;
         }
 
-        try {
-            const {error: updateError} = await supabase
+        let newAvatarUrl = avatarUrl;
+        let newFilename = null;
+        if (avatarFile) {
+            const {data: currentProfile} = await supabase
             .from('profiles')
-            .upsert({id: user.id, username: username, email: user.email}, {onConflict: 'id'});
+            .select('avatar_filename')
+            .eq('id', user.id)
+            .single();
+
+            const fileExt = avatarFile.name.split('.').pop();
+            const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+            newFilename = fileName;
+
+            const {error: uploadError} = await supabase.storage
+                .from('profile-pictures')
+                .upload(fileName, avatarFile, {
+                    cacheControl: 'no-store',
+                    upsert: false,
+            });
+
+            if (uploadError) {
+                setError('Error uploading avatar: ' + uploadError.message);
+                setLoading(false);
+                return;
+            }
+
+            const {data: publicUrlData} = supabase.storage
+                .from('profile-pictures')
+                .getPublicUrl(fileName);
+
+            newAvatarUrl = `${publicUrlData.publicUrl}?t=${Date.now()}`;
+
+            const defaultFilename = DEFAULT_AVATAR_URL.split('/').pop();
+            if (currentProfile?.avatar_filename !== defaultFilename) {
+                const {error: deleteError} = await supabase.storage
+                    .from('profile-pictures')
+                .remove([currentProfile.avatar_filename])
+            
+                if (deleteError) {
+                    console.warn('Could not delete old avatar file: ', deleteError.message);
+                }
+            }
+        }
+
+        try {
+            const updateData = {
+                id: user.id,
+                username: username,
+                email: user.email,
+                avatar_url: newAvatarUrl
+            };
+
+            if (newFilename) {
+                updateData.avatar_filename = newFilename;
+            } else if (!avatarFile && avatarUrl === DEFAULT_AVATAR_URL) {
+                updateData.avatar_filename = null;
+            }
+
+            const {error: updateError} = await supabase
+                .from('profiles')
+                .upsert(updateData, {onConflict: 'id'});
             
             if (updateError) {
                 throw updateError;
             }
 
             setMessage('Profile updated successfully!');
+            setAvatarUrl(newAvatarUrl);
+            setAvatarFile(null);
         } catch (updateError) {
             setError('Error updating profile: ' + updateError.message);
         } finally {
             setLoading(false);
         }
     };
+
+    const handleResetAvatar = async () => {
+        setLoading(true);
+        setMessage('');
+        setError('');
+        
+        const {data: {user}, error: userError} = await supabase.auth.getUser();
+
+        if (userError || !user) {
+            setError('User not authenticated')
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const {data: currentProfile} = await supabase
+                .from('profiles')
+                .select('avatar_filename')
+                .eq('id', user.id)
+                .single();
+            
+            if (currentProfile?.avatar_filename && currentProfile.avatar_filename !== DEFAULT_AVATAR_URL.split('/').pop()) {
+                const {error: deleteError} = await supabase.storage
+                    .from('profile-pictures')
+                    .remove([currentProfile.avatar_filename]);
+                
+                if (deleteError) {
+                    console.warn('Could not delte old avatar file during reset: ', deleteError.message);
+                }
+            }
+
+            const {error: updateError} = await supabase
+                .from('profiles')
+                .upsert({
+                    id: user.id,
+                    email: currentProfile.email || user.email,
+                    avatar_url: null,
+                    avatar_filename: null
+                }, {onConflict: 'id'});
+            
+            if (updateError) {
+                throw updateError;
+            }
+
+            setMessage('Avatar reset to default!');
+            setAvatarUrl(DEFAULT_AVATAR_URL);
+            setAvatarFile(null);
+        } catch (resetError) {
+            setError('Error resetting avatar: ' + resetError.message);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const handlePasswordReset = async () => {
         setLoading(true);
@@ -134,6 +259,37 @@ export default function SettingsPage() {
                 <h2 className={styles.sectionTitle}>User Profile</h2>
                 <form onSubmit={handleUpdateProfile} className={styles.form}>
                     <div className={styles.formGroup}>
+                            <label className={styles.label}>Current Avatar:</label>
+                            <img
+                                src={avatarUrl}
+                                alt="Avatar"
+                                width={100}
+                                height={100}
+                                className={styles.currentAvatar}
+                            />
+                            {avatarUrl !== DEFAULT_AVATAR_URL && (
+                                <button
+                                    type="button"
+                                    onClick={handleResetAvatar}
+                                    className={`${styles.button} ${styles.dangerButton}`}
+                                    disabled={loading}
+                                    style={{marginTop: '10px'}}
+                                >
+                                    Reset to Default Avatar
+                                </button>
+                            )}
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="avatar" className={styles.label}>Upload Avatar:</label>
+                        <input
+                            type="file"
+                            id="avatar"
+                            accept="image/*"
+                            onChange={(e) => setAvatarFile(e.target.files[0])}
+                            className={styles.input}
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
                         <label htmlFor="email" className={styles.label}>Email:</label>
                         <input
                             type="email"
@@ -174,9 +330,6 @@ export default function SettingsPage() {
 
             <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Display Settings</h2>
-                <div className={styles.themeToggleWrapper}>
-                    <ThemeToggle />
-                </div>
             </section>
         </div>
     );
