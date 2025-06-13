@@ -32,16 +32,14 @@ export default function SignUp() {
       return;
     }
 
-    // Redirect to login page after successful signup
     router.push("/login");
     setLoading(false);
   };
 
   return (
-    <div className={styles.container}>
     <form onSubmit={handleSignUp} className={styles.form}>
+      <h2>Create Account</h2>
 
-        <h2>Create Account</h2>
       <input
         type="text"
         placeholder="Username"
@@ -63,11 +61,12 @@ export default function SignUp() {
         onChange={e => setPassword(e.target.value)}
         required
       />
+
       <button type="submit" disabled={loading}>
         {loading ? "Signing up..." : "Sign Up"}
       </button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {error && <p className={styles.error}>{error}</p>}
     </form>
-    </div>
   );
 }
