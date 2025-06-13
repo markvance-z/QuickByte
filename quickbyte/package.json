@@ -6,21 +6,26 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^1.0.6",
     "@supabase/supabase-js": "^2.49.4",
-
     "next": "15.3.2",
     "next-themes": "^0.4.6",
     "papaparse": "^5.5.3",
-
     "react": "^19.0.0",
-    "react-dom": "^19.1.0"  
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^30.0.0",
+    "jest-environment-jsdom": "^30.0.0",
+    "ts-node": "^10.9.2"
   }
 }
-
-
-
