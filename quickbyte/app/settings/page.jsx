@@ -327,10 +327,6 @@ export default function SettingsPage() {
                     Reset Password
                 </button>
             </section>
-
-            <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Display Settings</h2>
-            </section>
         </div>
     );
 }
