@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [allRecipes, setAllRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [session, setSession] = useState(null);
+  const [randomRecipe, setRandomRecipe] = useState(null);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -101,6 +102,27 @@ export default function Dashboard() {
     setQuery("");
   };
 
+  
+  const getRandomRecipe = async () => {
+  const { data, error } = await supabase
+    .from('precipes')  
+    .select('*');
+
+  if (error) {
+    console.error("Failed to generate random recipe: ", error);
+    return;
+  }
+
+  if (data.length === 0) {
+    console.warn("No recipes found.");
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * data.length);
+  setRandomRecipe(data[randomIndex]);
+  setSelectedRecipe(null); 
+};
+  
   // Form handlers
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -261,6 +283,14 @@ export default function Dashboard() {
         >
           Reset
         </button>
+
+        <button
+          onClick={getRandomRecipe}
+          className="ml-2 px-3 py-1 bg-green-600 text-white rounded"
+        >
+          Random Recipe
+        </button>
+            
       </div>
 
       {/* Search Results */}
@@ -293,6 +323,21 @@ export default function Dashboard() {
             className="mt-2 text-sm text-blue-500 underline"
           >
             Close
+          </button>
+        </div>
+      )}
+
+      {randomRecipe && (
+    <div className="mt-4 p-4 border rounded bg-green-100">
+      <h4 className="font-semibold">{randomRecipe.title}</h4>
+      <p><strong>Time:</strong> {randomRecipe.time} minutes</p>
+      <p><strong>Description:</strong> {randomRecipe.description || "No description available."}</p>
+      <p><strong>Ingredients:</strong> {randomRecipe.ingredients || "Not listed."}</p>
+      <button
+        onClick={() => setRandomRecipe(null)}
+        className="mt-2 text-sm text-green-700 underline"
+      >
+          Close
           </button>
         </div>
       )}
