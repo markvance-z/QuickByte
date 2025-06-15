@@ -6,7 +6,6 @@ import ProfilePicture from './profilePicture.jsx';
 
 const width = 180;
 const height = width/2.048;
-const profile = "{profile-icon}"
     
 export default function Header() {
     return <header className="header">
@@ -15,7 +14,7 @@ export default function Header() {
             width={width}
             height={height}
             alt="QuickByte"
-        /></span> {profile}
+        /></span>
         <ProfilePicture />
         <Logout/>
     </header>

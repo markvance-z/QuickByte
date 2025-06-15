@@ -80,10 +80,9 @@ export default function Dashboard() {
     fetchProfile();
   }, [router]);
 
-  // Recipe search - FIXED: Changed from 'precipe' to 'precipes'
   const getRecipes = async (query) => {
     const { data, error } = await supabase
-      .from("precipes") // Fixed table name
+      .from("recipes") 
       .select()
       .textSearch("title", query)
       .limit(10);
@@ -270,7 +269,7 @@ export default function Dashboard() {
           <ul>
             {allRecipes.map(recipe => (
               <li
-                key={recipe.id} // Fixed: changed from recipe.ID to recipe.id
+                key={recipe.recipe_id} 
                 className="cursor-pointer underline text-blue-700 mb-1"
                 onClick={() => setSelectedRecipe(recipe)}
               >
