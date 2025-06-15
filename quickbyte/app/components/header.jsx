@@ -6,8 +6,8 @@ import ProfilePicture from './profilePicture.jsx';
 
 const width = 180;
 const height = width/2.048;
-const profile = "{profile-icon}"
-    
+const profile = <ProfilePicture />;
+
 export default function Header() {
     return <header className="header">
         <span> <Image 
