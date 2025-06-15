@@ -1,0 +1,22 @@
+.settingsButton {
+
+    padding: 0.5rem 1rem;
+    border: 5px solid var(--settings-button-foreground);
+    border-radius: 30px;
+    background-color: var(--settings-button-background);
+    color: var(--settings-button-foreground);
+    font-size: 1.5rem;
+    display: flex;
+    transition: background-color .3s ease, transform .2s ease, font-size .2s ease;
+    align-items: center;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1100;
+}
+
+.settingsButton:hover {
+    background-color: gold;
+    cursor: pointer;
+    font-size: 1.8rem;
+}

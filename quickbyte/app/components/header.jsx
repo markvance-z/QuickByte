@@ -2,6 +2,7 @@
 import React from 'react';
 import Image from "next/image";
 import Logout from "./logout.jsx"
+import ProfilePicture from './profilePicture.jsx';
 
 const width = 180;
 const height = width/2.048;
@@ -15,6 +16,7 @@ export default function Header() {
             height={height}
             alt="QuickByte"
         /></span> {profile}
+        <ProfilePicture />
         <Logout/>
     </header>
 

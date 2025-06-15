@@ -8,6 +8,10 @@ html.light {
   --foreground: #ffffff;
   --left-background: #98fb98; 
   --right-background: #98fb98;
+  --settings-button-background: white;
+  --settings-button-foreground: black;
+  --settings-page-border: rgba(158, 158, 158, 0.486);
+
 }
 
 html.dark {
@@ -15,6 +19,9 @@ html.dark {
   --foreground: #ededed;
   --left-background: #0b5f19; 
   --right-background: #0b5f19;
+  --settings-button-background: black;
+  --settings-button-foreground: white;
+  --settings-page-border: rgba(233, 233, 233, 0.486);
 }
 
 html,
@@ -36,6 +43,17 @@ body {
   grid-gap: 10px;
   width: 98vw;
   height: 98vh;
+  position: relative;
+}
+
+.bottom-right-controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .left {

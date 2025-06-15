@@ -6,7 +6,6 @@ import { useTheme } from "next-themes";
 import { Switch } from "@headlessui/react";
 import { SunIcon, MoonIcon } from "@heroicons/react/solid";
 import React from 'react';
-import userEvent from '@testing-library/user-event';
 
 export default function ThemeToggle() {
     const { theme, setTheme } = useTheme();

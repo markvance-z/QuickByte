@@ -1,0 +1,181 @@
+.container {
+    max-width: 800px;
+    margin: 20px;
+    padding: 30px;
+    background-color: navy;
+    color: var(--foreground);
+    border-radius: 12px;
+    box-shadow: 0 4px 5px gray;
+    font-family: Arial, Hevetica, sans-serif;
+    position: relative;
+}
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 20px 0px 30px;
+    color: var(--foreground)
+}
+
+.backButton {
+    position: absolute;
+    display: flex;
+    top: 10px;
+    left: 10px;
+    background-color: rgb(56, 56, 56);
+    color: white;
+    padding: 2px 4px;
+    border: none;
+    border-radius: 8px;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: background-color .3s ease, transform .2s ease, font-size .2s ease;
+    align-items: center;
+    gap: 1px;
+}
+
+.backButton:hover {
+    background-color: rgb(175, 175, 175);
+    transform: translateX(-5px);
+    font-size: 1rem;
+}
+
+.section {
+    background-color: var(--left-background);
+    border: 5px solid var(--settings-page-border);
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.sectionTitle{
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--foreground);
+    border-bottom: 2px solid rgba(var(--gray-rgb), 0.2);
+    padding-bottom: 10px;
+}
+
+.currentAvatar {
+    border-radius: 30%;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.input {
+    padding: 12px 15px;
+    border: 5px solid var(--settings-page-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: var(--background);
+    color: var(--foreground);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input:focus {
+    border-color: var(--foreground);
+    outline: none;
+    box-shadow: 0 0 0 3 silver;
+}
+
+.button {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    align-self: flex-start;
+}
+
+.button:hover {
+    background-color: #5e5e5e;
+    transform: translateY(-1px);
+}
+
+.button:disabled {
+    background-color: #777777;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.dangerButton {
+    background-color: red;
+}
+
+.dangerButton:hover {
+    background-color: darkred;
+}
+
+.successMessage {
+    color: green;
+    margin-top: 10px;
+    font-size: 0.95rem;
+}
+
+.errorMessage {
+    color: red;
+    margin-top: 10px;
+    font-size: 0.95rem;
+}
+
+.themeToggleWrapper {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .sectionTitle {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 10px;
+        padding: 15px;
+    }
+    
+    .title {
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+    }
+
+    .section {
+        padding: 15px;
+    }
+
+    .input, .button {
+        padding: 10px 15px;
+    }
+}
