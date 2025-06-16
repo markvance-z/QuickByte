@@ -1,5 +1,5 @@
 'use client';
-
+import Link from 'next/link';
 import React, {useState, useEffect} from 'react';
 import supabase from '../../lib/supabaseClient';
 
@@ -142,8 +142,15 @@ export default function SideBarLeft() {
                     </ul>
                 </div>
             )}
-            <div>
-                {allCats.map(cat => (
+            <div className="my-4">
+            <Link href="/Grocery">
+             <button>Grocery List</button>
+         </Link>
+        </div>
+
+        <div>
+         {allCats.map(cat => (
+
                     <div key={cat}>
                         <button onClick={() => toggleCat(cat)}>
                             {openCats[cat] ? '▽' : '▷'} {cat} ({counts[cat]})
