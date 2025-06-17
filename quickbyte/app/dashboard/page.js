@@ -331,7 +331,6 @@ export default function Dashboard() {
           onClick={() => setSelectedRecipe(null)}
           className="mt-2 text-sm text-blue-500 underline"
         >
-          Close
         </button>
       </div>
     )}
