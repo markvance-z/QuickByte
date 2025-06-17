@@ -151,7 +151,13 @@ export default function RightPanel() {
     });
 
     const interval = setInterval(() => {
-      setTipIndex((prevIndex) => (prevIndex + 1) % cookingTips.length);
+      setTipIndex((prevIndex) => {
+        let nextIndex;
+        do {
+          nextIndex = Math.floor(Math.random() * cookingTips.length);
+        } while (cookingTips[nextIndex] === cookingTips[prevIndex]);
+        return nextIndex;
+      });
     }, 5000);
 
     return () => {
