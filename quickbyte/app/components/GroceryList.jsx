@@ -1,9 +1,12 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function GroceryList() {
   const [items, setItems] = useState([]);
   const [input, setInput] = useState('');
+  const router = useRouter();
+
 
   const addItem = () => {
     if (input.trim()) {
@@ -16,6 +19,10 @@ export default function GroceryList() {
     const updated = items.filter((_, i) => i !== index);
     setItems(updated);
   };
+
+  const backtoDashboard = () => {
+    router.push('/dashboard');
+  }
 
   return (
     <div style={{ padding: '20px', maxWidth: '400px' }}>
@@ -75,10 +82,25 @@ export default function GroceryList() {
               }}
             >
               ✕
-            </button>
+            </button>          
           </li>
         ))}
       </ul>
+
+        <button
+              onClick={() => backtoDashboard()}
+              style={{
+                border: '3px solid rgba(158, 158, 158, 0.486)',
+                backgroundColor: 'var(--background)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '4px 8px',
+                cursor: 'pointer',
+              }}
+            >
+              Back to Dashboard
+        </button>
     </div>
   );
 }
