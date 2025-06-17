@@ -90,10 +90,9 @@ export default function GroceryList() {
         <button
               onClick={() => backtoDashboard()}
               style={{
-                border: '3px solid rgba(158, 158, 158, 0.486)',
+                border: '2px solid rgba(158, 158, 158, 0.486)',
                 backgroundColor: 'var(--background)',
                 color: 'white',
-                border: 'none',
                 borderRadius: '4px',
                 padding: '4px 8px',
                 cursor: 'pointer',
