@@ -321,20 +321,20 @@ export default function Dashboard() {
       )}
 
       {/* Recipe Details */}
-      {selectedRecipe && (
-        <div className="mt-4 p-4 border rounded bg-gray-100">
-          <p><strong>{selectedRecipe.title}</strong></p>
-          <p><strong>Time:</strong> {selectedRecipe.time} minutes</p>
-          <p><strong>Description:</strong> {selectedRecipe.description}</p>
-          <p><strong>Ingredients:</strong> {selectedRecipe.ingredients}</p>
-          <button
-            onClick={() => setSelectedRecipe(null)}
-            className="mt-2 text-sm text-blue-500 underline"
-          >
-            Close
-          </button>
-        </div>
-      )}
+    {selectedRecipe && (
+      <div>
+        <ViewRecipe
+          selectedRecipe={selectedRecipe}
+          onClose={() => setSelectedRecipe(null)}
+        />
+        <button
+          onClick={() => setSelectedRecipe(null)}
+          className="mt-2 text-sm text-blue-500 underline"
+        >
+          Close
+        </button>
+      </div>
+    )}
 
       {randomRecipe && (
     <div className="mt-4 p-4 border rounded bg-green-100">
