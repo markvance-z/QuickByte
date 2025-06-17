@@ -292,12 +292,14 @@ export default function Dashboard() {
           Reset
         </button>
 
+        {/*Random recipe button must access all recipes every call. This is not scalable for large user bases. 
+        If we purchased a higher tier supabase plan, we could use a more efficient method to get a random recipe.
         <button
           onClick={getRandomRecipe}
           className="ml-2 px-3 py-1 bg-green-600 text-white rounded"
         >
           Random Recipe
-        </button>
+        </button>*/}
             
       </div>
 
