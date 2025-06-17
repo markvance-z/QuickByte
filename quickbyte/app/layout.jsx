@@ -6,6 +6,7 @@ import ThemeToggle from "./components/themeToggle";
 import Provider from "./provider/themeProvider";
 import ViewRecipe from "./components/viewRecipe";
 import SettingsButton from "./components/settingsButton";
+import RightPanel from "./components/RightPanel";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +47,7 @@ export default function RootLayout({ children }) {
             {children}
           </main> 
           <aside className="right">
+            <RightPanel />
           </aside>
       </body>
     </html>
