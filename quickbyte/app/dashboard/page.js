@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from '../../lib/supabaseClient';
+import ViewRecipe from "../components/viewRecipe";
 import Link from "next/link";
 import React from "react";
 
@@ -83,11 +84,18 @@ export default function Dashboard() {
 
   // Recipe search - FIXED: Changed from 'precipe' to 'precipes'
   const getRecipes = async (query) => {
+    const trimmedQuery = query.trim();
+
+    if (!trimmedQuery) {
+      setAllRecipes([]);
+      return;
+    }
+   
     const { data, error } = await supabase
-      .from("precipes") // Fixed table name
+      .from("recipes") // Fixed table name
       .select()
-      .textSearch("title", query)
-      .limit(10);
+      .ilike("title", `%${trimmedQuery}%`)
+      .limit(17);
 
     if (error) {
       console.log("Error searching:", error);
@@ -296,12 +304,13 @@ export default function Dashboard() {
       {/* Search Results */}
       {allRecipes.length > 0 && (
         <div>
-          <h3 className="font-semibold mb-2">Search Results</h3>
+          <h2 className="text-xl mb-2">Search Results:</h2>
           <ul>
             {allRecipes.map(recipe => (
               <li
-                key={recipe.id} // Fixed: changed from recipe.ID to recipe.id
-                className="cursor-pointer underline text-blue-700 mb-1"
+                key={recipe.recipe_id} // Fixed: changed from recipe.ID to recipe.id
+                className="cursor-pointer underline text-blue-700 mb-2"
+                style={{ cursor: 'pointer' }}
                 onClick={() => setSelectedRecipe(recipe)}
               >
                 {recipe.title}

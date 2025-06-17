@@ -109,17 +109,6 @@ export default function SideBarLeft() {
     const toggleCat = cat => setOpenCats(prev => ({ ...prev, [cat]: !prev[cat] }));
     const toggleTag = tag => setSelectedTags(prev => prev.includes(tag.id) ? prev.filter(t => t !== tag.id): [...prev, tag.id]);
 
-    //Opens and closes the modal and displays selected recipe details
-    const openRecipeModal = (recipe) => {
-        setSelectedRecipe(recipe.recipes);
-        setShowModal(true);
-    };
-
-    const closeModal = () => {
-        setSelectedRecipe(null);
-        setShowModal(false);
-    }
-
     return (
     <>
         <div>
