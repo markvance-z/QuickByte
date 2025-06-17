@@ -74,7 +74,9 @@ export default function ViewRecipe({ selectedRecipe, onClose }) {
         overflowY: 'auto',
       }}>
         <span
-          style={{ cursor: 'pointer', float: 'right', fontSize: '20px' }}
+          style={{ cursor: 'pointer', float: 'right', fontSize: '20px', position: 'sticky', top: 0, padding: '0 10px', color: 'var(--foreground)', 
+            textAlign: 'right', fontWeight: 'bold', zIndex: 10
+           }}
           onClick={onClose}
         >
           &times;
