@@ -14,23 +14,33 @@ export default function SideBarLeft() {
     const [openFilter, setOpenFilter] = useState(false);
     const [selectedTags, setSelectedTags] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
 
     const [selectedRecipe, setSelectedRecipe] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
     //listen for auth changes. Update the saved list when auth state changes
     useEffect(() => {
-        const {data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-            loadSaved(session ? session.user : null);
-        });
+        const getUserAndLoad = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+            await loadSaved(user);
+            setLoading(false);
 
-        loadSaved(supabase.auth.user);
+        }
+
+        getUserAndLoad();
+
+        const {data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+            const currentUser = session ? session.user : null;
+            setUser(currentUser);
+            loadSaved(currentUser).then(() => { setLoading(false); });
+        });
+        
         return () => {
             listener.subscription.unsubscribe();
         };
-    }, []);
-
-    if (loading || !user) { return null; } 
+    }, []);    
 
     //get tags from supabase when user saved is populated
     useEffect(() => {
@@ -38,6 +48,8 @@ export default function SideBarLeft() {
             loadTags();
         }
     }, [saved]);
+
+    if (loading || !user) { return null; } 
 
     async function loadTags() {
         const recipeIds = saved.map(r => r.recipe_id);
