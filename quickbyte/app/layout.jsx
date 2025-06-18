@@ -6,6 +6,7 @@ import ThemeToggle from "./components/themeToggle";
 import Provider from "./provider/themeProvider";
 import ViewRecipe from "./components/viewRecipe";
 import SettingsButton from "./components/settingsButton";
+import RightPanel from "./components/RightPanel";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,6 +26,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
   return (
     <html lang="en" >
         <body className="wrapper">
@@ -32,7 +34,7 @@ export default function RootLayout({ children }) {
             <ThemeToggle />
             <div className="bottom-right-controls">
               <SettingsButton />    
-            </div>     
+            </div>        
           </Provider>
           <header>
             < Header />
@@ -45,7 +47,7 @@ export default function RootLayout({ children }) {
             {children}
           </main> 
           <aside className="right">
-            < ViewRecipe />
+            <RightPanel />
           </aside>
       </body>
     </html>

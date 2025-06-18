@@ -78,7 +78,7 @@ body {
   border-style: solid;
   background-color: var(--right-background);
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-  border-right: 2 px solid #ccc;
+  border-right: 2px solid #ccc;
   border-color: rgba(158, 158, 158, 0.486);
 }
 

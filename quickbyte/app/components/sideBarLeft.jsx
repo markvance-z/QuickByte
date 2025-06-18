@@ -1,7 +1,8 @@
 'use client';
-
+import Link from 'next/link';
 import React, {useState, useEffect} from 'react';
 import supabase from '../../lib/supabaseClient';
+import Dashboard from '../dashboard/page';
 
 export default function SideBarLeft() {
     
@@ -12,21 +13,34 @@ export default function SideBarLeft() {
     const [tags, setTags] = useState([]);
     const [openFilter, setOpenFilter] = useState(false);
     const [selectedTags, setSelectedTags] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
 
     const [selectedRecipe, setSelectedRecipe] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
     //listen for auth changes. Update the saved list when auth state changes
     useEffect(() => {
-        const {data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-            loadSaved(session ? session.user : null);
-        });
+        const getUserAndLoad = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+            await loadSaved(user);
+            setLoading(false);
 
-        loadSaved(supabase.auth.user);
+        }
+
+        getUserAndLoad();
+
+        const {data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+            const currentUser = session ? session.user : null;
+            setUser(currentUser);
+            loadSaved(currentUser).then(() => { setLoading(false); });
+        });
+        
         return () => {
             listener.subscription.unsubscribe();
         };
-    }, []);
+    }, []);    
 
     //get tags from supabase when user saved is populated
     useEffect(() => {
@@ -34,6 +48,8 @@ export default function SideBarLeft() {
             loadTags();
         }
     }, [saved]);
+
+    if (loading || !user) { return null; } 
 
     async function loadTags() {
         const recipeIds = saved.map(r => r.recipe_id);
@@ -105,17 +121,6 @@ export default function SideBarLeft() {
     const toggleCat = cat => setOpenCats(prev => ({ ...prev, [cat]: !prev[cat] }));
     const toggleTag = tag => setSelectedTags(prev => prev.includes(tag.id) ? prev.filter(t => t !== tag.id): [...prev, tag.id]);
 
-    //Opens and closes the modal and displays selected recipe details
-    const openRecipeModal = (recipe) => {
-        setSelectedRecipe(recipe.recipes);
-        setShowModal(true);
-    };
-
-    const closeModal = () => {
-        setSelectedRecipe(null);
-        setShowModal(false);
-    }
-
     return (
     <>
         <div>
@@ -142,8 +147,15 @@ export default function SideBarLeft() {
                     </ul>
                 </div>
             )}
-            <div>
-                {allCats.map(cat => (
+            <div className="my-4">
+            <Link href="/Grocery">
+             <button>Grocery List</button>
+         </Link>
+        </div>
+
+        <div>
+         {allCats.map(cat => (
+
                     <div key={cat}>
                         <button onClick={() => toggleCat(cat)}>
                             {openCats[cat] ? '▽' : '▷'} {cat} ({counts[cat]})
@@ -165,66 +177,10 @@ export default function SideBarLeft() {
                                 }
                             </ul>
                         )}
-                        </div>
+                    </div>
                 ))}
             </div>
         </div>
-            {/* Modal for displaying recipe details */}
-            {showModal && selectedRecipe && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: 1000,
-                }}>
-                    <div style={{
-                        backgroundColor: 'var(--background)',
-                        color: 'var(--foreground)',
-                        padding: '20px',
-                        borderRadius: '5px',
-                        maxWidth: '500px',
-                        width: '100%',
-                        maxHeight: '80vh',
-                        overflowY: 'auto',
-                    }}>
-                        <span style={{
-                            cursor: 'pointer',
-                            float: 'right',
-                            fontSize: '20px',
-                        }} onClick={closeModal}>&times;</span>
-                        <h1><strong>{selectedRecipe.title}</strong></h1>
-
-                        <h2><strong>Description</strong></h2>
-                        <p>{selectedRecipe.description}</p>
-
-                        <h2><strong>Ingredients</strong></h2>
-                        <p>{selectedRecipe.ingredients_name}</p>
-
-                        <h2><strong>Steps</strong></h2>
-                        <p>{selectedRecipe.steps}</p>
-
-                        <h2>Time</h2>
-                        <p>
-                            {selectedRecipe.total_minutes < 60
-                                ? `${selectedRecipe.total_minutes} minutes`
-                                : `${Math.floor(selectedRecipe.total_minutes / 60)} hour${Math.floor(selectedRecipe.total_minutes / 60) > 1 ? 's' : ''} ${selectedRecipe.total_minutes % 60 ? selectedRecipe.total_minutes % 60 + ' minutes' : ''}`
-                            }
-                        </p>
-
-                        <h3><p>{selectedRecipe.yield}</p></h3>
-
-                        {/*Kaggle dataset shows nutrional information poorly. A link to a nutrional calculator API 
-                        may be necessary for users to see accurate nutrional information.*/}
-                        <h4>{selectedRecipe.nutrition}</h4>
-                    </div>
-                </div>
-            )}
-        </>
+    </>
     );
 }

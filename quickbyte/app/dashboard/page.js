@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import supabase from '../../lib/supabaseClient';
+import ViewRecipe from "../components/viewRecipe";
 import Link from "next/link";
 import React from "react";
 
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const [allRecipes, setAllRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [session, setSession] = useState(null);
+  const [randomRecipe, setRandomRecipe] = useState(null);
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -81,11 +83,18 @@ export default function Dashboard() {
   }, [router]);
 
   const getRecipes = async (query) => {
+    const trimmedQuery = query.trim();
+
+    if (!trimmedQuery) {
+      setAllRecipes([]);
+      return;
+    }
+   
     const { data, error } = await supabase
-      .from("recipes") 
+      .from("recipes") // Fixed table name
       .select()
-      .textSearch("title", query)
-      .limit(10);
+      .ilike("title", `%${trimmedQuery}%`)
+      .limit(17);
 
     if (error) {
       console.log("Error searching:", error);
@@ -100,6 +109,27 @@ export default function Dashboard() {
     setQuery("");
   };
 
+  
+  const getRandomRecipe = async () => {
+  const { data, error } = await supabase
+    .from('precipes')  
+    .select('*');
+
+  if (error) {
+    console.error("Failed to generate random recipe: ", error);
+    return;
+  }
+
+  if (data.length === 0) {
+    console.warn("No recipes found.");
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * data.length);
+  setRandomRecipe(data[randomIndex]);
+  setSelectedRecipe(null); 
+};
+  
   // Form handlers
   const handleFormChange = (e) => {
     const { name, value } = e.target;
@@ -260,17 +290,28 @@ export default function Dashboard() {
         >
           Reset
         </button>
+
+        {/*Random recipe button must access all recipes every call. This is not scalable for large user bases. 
+        If we purchased a higher tier supabase plan, we could use a more efficient method to get a random recipe.
+        <button
+          onClick={getRandomRecipe}
+          className="ml-2 px-3 py-1 bg-green-600 text-white rounded"
+        >
+          Random Recipe
+        </button>*/}
+            
       </div>
 
       {/* Search Results */}
       {allRecipes.length > 0 && (
         <div>
-          <h3 className="font-semibold mb-2">Search Results</h3>
+          <h2 className="text-xl mb-2">Search Results:</h2>
           <ul>
             {allRecipes.map(recipe => (
               <li
-                key={recipe.recipe_id} 
-                className="cursor-pointer underline text-blue-700 mb-1"
+                key={recipe.recipe_id} // Fixed: changed from recipe.ID to recipe.id
+                className="cursor-pointer underline text-blue-700 mb-2"
+                style={{ cursor: 'pointer' }}
                 onClick={() => setSelectedRecipe(recipe)}
               >
                 {recipe.title}
@@ -281,17 +322,31 @@ export default function Dashboard() {
       )}
 
       {/* Recipe Details */}
-      {selectedRecipe && (
-        <div className="mt-4 p-4 border rounded bg-gray-100">
-          <p><strong>{selectedRecipe.title}</strong></p>
-          <p><strong>Time:</strong> {selectedRecipe.time} minutes</p>
-          <p><strong>Description:</strong> {selectedRecipe.description}</p>
-          <p><strong>Ingredients:</strong> {selectedRecipe.ingredients}</p>
-          <button
-            onClick={() => setSelectedRecipe(null)}
-            className="mt-2 text-sm text-blue-500 underline"
-          >
-            Close
+    {selectedRecipe && (
+      <div>
+        <ViewRecipe
+          selectedRecipe={selectedRecipe}
+          onClose={() => setSelectedRecipe(null)}
+        />
+        <button
+          onClick={() => setSelectedRecipe(null)}
+          className="mt-2 text-sm text-blue-500 underline"
+        >
+        </button>
+      </div>
+    )}
+
+      {randomRecipe && (
+    <div className="mt-4 p-4 border rounded bg-green-100">
+      <h4 className="font-semibold">{randomRecipe.title}</h4>
+      <p><strong>Time:</strong> {randomRecipe.time} minutes</p>
+      <p><strong>Description:</strong> {randomRecipe.description || "No description available."}</p>
+      <p><strong>Ingredients:</strong> {randomRecipe.ingredients || "Not listed."}</p>
+      <button
+        onClick={() => setRandomRecipe(null)}
+        className="mt-2 text-sm text-green-700 underline"
+      >
+          Close
           </button>
         </div>
       )}
